@@ -1,57 +1,13 @@
 {
   "compilerOptions": {
-    // Basic Compiler Options
-    "target": "ES2022",                          // Use latest ECMAScript features
-    "module": "es6",                        // Use CommonJS module system
-    "lib": ["ES2022", "DOM"],                    // Include type definitions for ES2022 and DOM
-    "outDir": "./dist",                          // Compiled files output directory
-    "rootDir": "./src",                          // Source files directory
-
-    // Strict Type Checking
-    "strict": true,                              // Enable all strict type checking options
-    "noImplicitAny": true,                       // Raise error on implicit 'any' type
-    "strictNullChecks": true,                    // Enable strict null checks
-    "strictFunctionTypes": true,                 // Enable strict function type checking
-    "strictBindCallApply": true,                 // Enable strict 'bind', 'call', and 'apply' methods
-    "strictPropertyInitialization": true,        // Ensure class properties are initialized
-
-    // Additional Checks
-    "noUnusedLocals": true,                      // Report errors on unused locals
-    "noUnusedParameters": true,                  // Report errors on unused parameters
-    "noImplicitReturns": true,                   // Ensure all code paths return a value
-    "noFallthroughCasesInSwitch": true,          // Report errors for fallthrough cases in switch
-
-    // Module Resolution
-    "moduleResolution": "node",                  // Use Node.js-style module resolution
-    "baseUrl": ".",                              // Base directory for non-relative module names
-    "paths": {                                   // Module path aliases
-      "@core/*": ["src/core/*"],
-      "@features/*": ["src/features/*"],
-      "@utils/*": ["src/utils/*"]
-    },
-    "esModuleInterop": true,                     // Enable importing CJS modules as ES modules
-    "resolveJsonModule": true,                   // Allow importing JSON files
-
-    // Source Map and Debugging
-    "sourceMap": true,                           // Generate source map files
-    "inlineSources": true,                       // Include source code in source maps
-
-    // Additional Configurations
-    "forceConsistentCasingInFileNames": true,    // Ensure consistent filename casing
-    "skipLibCheck": true,                        // Skip type checking of declaration files
-
-    // Experimental Features
-    "experimentalDecorators": true,              // Enable decorators (for TypeORM)
-    "emitDecoratorMetadata": true                // Emit metadata for decorators
+    "target": "ES2022",
+    "module": "ES6",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
-
-  // Files and Directories to Include/Exclude
-  "include": [
-    "src/**/*"                                   // Include all files in src directory
-  ],
-  "exclude": [
-    "node_modules",                              // Exclude node_modules
-    "**/*.spec.ts",                              // Exclude test files from compilation
-    "dist"                                       // Exclude output directory
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
