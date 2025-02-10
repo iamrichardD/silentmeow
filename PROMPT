@@ -142,6 +142,33 @@ Features
 - Password hashing
 - Secure data storage
 - Best practice implementations
+- JSON Web Token (JWT) based authentication
+- Stateless authentication mechanism
+
+Authentication Strategy:
+- JWT (JSON Web Tokens) for secure, stateless authentication
+- Token-based authorization mechanism
+- Secure token generation and validation
+- Support for access and refresh tokens
+
+JWT Token Characteristics:
+- Short-lived access tokens (15-30 minutes)
+- Long-lived refresh tokens (7-14 days)
+- Cryptographically signed tokens
+- Contains user identity and roles
+- Supports fine-grained access control
+
+Authentication Features:
+- Secure token generation
+- Token validation middleware
+- Refresh token rotation
+- Secure token storage
+- Protection against common authentication vulnerabilities
+  - Cross-Site Scripting (XSS)
+  - Cross-Site Request Forgery (CSRF)
+  - Token replay attacks
+- Rate limiting on authentication endpoints
+- Comprehensive logging of authentication events
 
 4. Configuration
 - settings.json

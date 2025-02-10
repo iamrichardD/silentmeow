@@ -14,12 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Basic project structure for monorepo web application
 - Docker containerization for backend service
 - Express.js initial server configuration
+- JWT authentication strategy defined
 
 ### Changed
 - Standardized project name to lowercase "silentmeow"
 - Updated package metadata with correct license and author information
 - Updated Docker base image to Node.js 22
 - Refined build process for TypeScript compilation in Docker
+- Enhanced project security specifications
 
 ### Fixed
 - Resolved TypeScript compilation issues in Docker build
@@ -28,3 +30,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Security
 - Prepared initial security considerations for backend development
 - Implemented basic Docker container best practices
+- Defined JWT-based authentication approach
+- Outlined token-based security mechanisms
+- 
