@@ -15,21 +15,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Docker containerization for backend service
 - Express.js initial server configuration
 - JWT authentication strategy defined
+- Vitest for project testing
+- Initial UserRepository test suite
 
 ### Changed
 - Standardized project name to lowercase "silentmeow"
 - Updated package metadata with correct license and author information
 - Updated Docker base image to Node.js 22
-- Refined build process for TypeScript compilation in Docker
-- Enhanced project security specifications
+- Refined build process for TypeScript compilation
+- Updated TypeScript configuration for improved module resolution
+- Migrated from Jest to Vitest for testing framework
 
 ### Fixed
-- Resolved TypeScript compilation issues in Docker build
+- Resolved TypeScript module resolution issues
 - Improved backend service configuration
+- Enhanced testing infrastructure
 
 ### Security
 - Prepared initial security considerations for backend development
 - Implemented basic Docker container best practices
 - Defined JWT-based authentication approach
 - Outlined token-based security mechanisms
-- 
