@@ -25,11 +25,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Refined build process for TypeScript compilation
 - Updated TypeScript configuration for improved module resolution
 - Migrated from Jest to Vitest for testing framework
+- Updated import statements to use  extensions
+- Refined Vitest configuration for better module compatibility
 
 ### Fixed
 - Resolved TypeScript module resolution issues
 - Improved backend service configuration
 - Enhanced testing infrastructure
+- Corrected import statements for ES modules
 
 ### Security
 - Prepared initial security considerations for backend development

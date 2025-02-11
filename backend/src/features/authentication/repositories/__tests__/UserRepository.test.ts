@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { UserRepository } from '../UserRepository';
+import { UserRepository } from '../UserRepository.js';
 
 describe('UserRepository', () => {
   let userRepository: UserRepository;
