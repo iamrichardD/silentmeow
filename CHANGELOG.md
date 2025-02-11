@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - JWT authentication strategy defined
 - Vitest for project testing
 - Initial UserRepository test suite
+- Registration validation service
+  - Email format validation
+  - Strong password strength requirements
+  - Comprehensive validation tests
 
 ### Changed
 - Standardized project name to lowercase "silentmeow"
@@ -25,17 +29,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Refined build process for TypeScript compilation
 - Updated TypeScript configuration for improved module resolution
 - Migrated from Jest to Vitest for testing framework
-- Updated import statements to use  extensions
-- Refined Vitest configuration for better module compatibility
+- Implemented robust input validation for user registration
 
 ### Fixed
 - Resolved TypeScript module resolution issues
 - Improved backend service configuration
 - Enhanced testing infrastructure
-- Corrected import statements for ES modules
 
 ### Security
 - Prepared initial security considerations for backend development
 - Implemented basic Docker container best practices
 - Defined JWT-based authentication approach
 - Outlined token-based security mechanisms
+- Added comprehensive input validation for user registration
