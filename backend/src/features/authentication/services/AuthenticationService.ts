@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { IRegisterRequest } from '../contracts/IRegisterRequest.js';
-import { ILoginRequest } from '../contracts/ILoginRequest.js';
-import { User } from '../models/User.js';
-import { UserRepository } from '../repositories/UserRepository.js';
-import { TokenService } from './TokenService.js';
+import { IRegisterRequest } from '../contracts/IRegisterRequest';
+import { ILoginRequest } from '../contracts/ILoginRequest';
+import { User } from '../models/User';
+import { UserRepository } from '../repositories/UserRepository';
+import { TokenService } from './TokenService';
 
 export class AuthenticationService {
   constructor(

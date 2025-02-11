@@ -15,7 +15,7 @@
  */
 
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
+import { User } from '../models/User';
 
 export class TokenService {
   private readonly accessTokenSecret: string;

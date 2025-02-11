@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { User } from '../models/User.js';
+import { User } from '../models/User';
 
 export class UserRepository {
   public async findByEmail(email: string): Promise<User | null> {

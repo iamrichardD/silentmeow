@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { PasswordService } from '../PasswordService.js';
+import { PasswordService } from '../PasswordService';
 
 describe('PasswordService', () => {
   const passwordService = new PasswordService();
