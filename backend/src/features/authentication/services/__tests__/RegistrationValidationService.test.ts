@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { RegistrationValidationService } from '../RegistrationValidationService';
 import { IRegisterRequest } from '../../contracts/IRegisterRequest';
 
