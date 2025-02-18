@@ -13,6 +13,8 @@ RUN npm ci
 # Copy entire source directory
 COPY . .
 
+COPY ../settings.json ./settings.json
+
 # Verify TypeScript installation
 RUN npx tsc --version
 

@@ -1,0 +1,30 @@
+{
+  "app": {
+    "name": "silentmeow",
+    "environment": "development",
+    "debug": false
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 3000
+  },
+  "logging": {
+    "level": "info",
+    "colorize": true,
+    "translateTime": "SYS:standard",
+    "destination": 1
+  },
+  "database": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5432,
+    "username": "silentmeow_user",
+    "password": "development_password"
+  },
+  "authentication": {
+    "jwt": {
+      "secret": "development_secret",
+      "expiresIn": "1h"
+    }
+  }
+}

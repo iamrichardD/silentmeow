@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { ConfigurationManager } from './ConfigurationManagerInterface';
 
 interface ConfigurationRecord {
   [key: string]: string | number | boolean | ConfigurationRecord | undefined;
 }
 
-export class HierarchicalConfigurationManager {
+export class HierarchicalConfigurationManager implements ConfigurationManager {
   private baseConfig: ConfigurationRecord = {};
   private environmentOverrides: ConfigurationRecord = {};
 
@@ -28,7 +29,9 @@ export class HierarchicalConfigurationManager {
     const searchPaths = [
       process.cwd(),
       path.join(process.cwd(), 'config'),
-      path.join(__dirname, '..', 'config')
+      path.join(__dirname, '..', '..', '..', 'settings.json'), // Look in project root
+      path.join(__dirname, '..', 'config'),
+      '/app/settings.json' // Docker container path
     ];
 
     for (const dir of searchPaths) {

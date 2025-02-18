@@ -7,6 +7,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ## [Unreleased]
 
 ### Added
+- Fastify web server integration
+- Root-level settings.json for centralized configuration
+- Multi-stage Docker build process
+- Flexible logging mechanism with environment-based configuration
+- Restructured project to follow Vertical Slice Architecture
+
+### Changed
+- Updated logging configuration to support development and production environments
+- Improved Docker build and configuration strategies
+- Refined build process for TypeScript compilation
+- Improved configuration management approach
+
+### Fixed
+- Implemented type-safe configuration management
+- Improved environment variable handling
+- Enhanced configuration retrieval logic
+- Resolved TypeScript module resolution issues
+
+### Added (Previous Versions)
 - Initial project setup
 - Git repository initialization
 - Project specification document (PROMPT)
@@ -17,23 +36,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - JWT authentication strategy defined
 - Vitest for project testing
 - Comprehensive configuration management system
-  - Environment variable overrides
-  - Nested configuration support
-  - Type conversion for configuration values
+    - Environment variable overrides
+    - Nested configuration support
+    - Type conversion for configuration values
 - UUID package for unique identifier generation
 
-### Changed
+### Changed (Previous Versions)
 - Standardized project name to lowercase "silentmeow"
 - Updated package metadata with correct license and author information
 - Updated Docker base image to Node.js 22
-- Refined build process for TypeScript compilation
-- Improved configuration management approach
-
-### Fixed
-- Resolved TypeScript module resolution issues
-- Enhanced configuration retrieval logic
-- Improved environment variable handling
-- Added UUID type definitions for TypeScript support
 
 ### Security
 - Prepared initial security considerations for backend development
