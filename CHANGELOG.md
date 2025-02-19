@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ## [Unreleased]
 
 ### Added
+- Implemented CQRS-based user repository interfaces
+- Added local authentication strategy with tests
+- Created in-memory user repository for testing
+- Added user and authentication domain models
+- Added interfaces for password service and user management
 - Fastify web server integration
 - Root-level settings.json for centralized configuration
 - Multi-stage Docker build process
@@ -14,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Restructured project to follow Vertical Slice Architecture
 
 ### Changed
+- Reorganized authentication and user management interfaces
 - Updated logging configuration to support development and production environments
 - Improved Docker build and configuration strategies
 - Refined build process for TypeScript compilation

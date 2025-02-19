@@ -35,6 +35,7 @@ describe('UserRepository', () => {
 
   it('should throw "Not implemented" for create', async () => {
     const userData = {
+      username: 'test_username',
       email: 'test@example.com',
       passwordHash: 'hash',
       createdAt: new Date(),

@@ -2,54 +2,57 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { InMemoryUserRepository } from '../InMemoryUserRepository';
 import { User } from '../../models/User';
 
+const wait = async (ms: number) => {
+  await new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe('InMemoryUserRepository', () => {
-  let repository: InMemoryUserRepository;
-  let testUser: Omit<User, 'id'>;
+  const repository: InMemoryUserRepository = new InMemoryUserRepository();
+  const testUser = { passwordHash: 'password', username: 'tstuser01', email: 'testuser01@domain.local' };
+  const users : User[] = new Array<User>();
 
   beforeEach(() => {
-    repository = new InMemoryUserRepository();
-    
-    // Use a known, fixed datetime for tests
-    const knownDate = new Date("2023-01-01T00:00:00.000Z");
-    
-    testUser = {
-      email: "test@example.com",
-      passwordHash: "hashedpassword",
-      createdAt: knownDate,
-      updatedAt: knownDate
-    };
+    users.every(user => repository.delete(user.id!));
+    users.length = 0;
+  });
+
+  afterEach(() => {
+    users.every(user => repository.delete(user.id!));
+    users.length = 0;
   });
 
   describe('Create', () => {
     it('should create a new user', async () => {
-      const createdUser = await repository.create(testUser);
+      const actual = await repository.create(testUser);
 
-      expect(createdUser).toBeDefined();
-      expect(createdUser.id).toBeTruthy();
-      expect(createdUser.email).toBe(testUser.email);
+      expect(actual).toBeDefined();
+      expect(actual.id).toBeTruthy();
+      expect(actual.email).toBe(testUser.email);
+
+      users.push(actual);
     });
   });
 
   describe('FindByEmail', () => {
-    it('should find a user by email', async () => {
-      const createdUser = await repository.create(testUser);
-      const foundUser = await repository.findByEmail(testUser.email);
-
-      expect(foundUser).toBeDefined();
-      expect(foundUser?.id).toBe(createdUser.id);
-    });
-
     it('should return null if user not found', async () => {
       const foundUser = await repository.findByEmail('nonexistent@example.com');
 
       expect(foundUser).toBeNull();
+    });
+
+    it('should find a user by email', async () => {
+      const createdUser = await repository.create(testUser);
+      const actual = await repository.findByEmail(testUser.email as string);
+
+      expect(actual).toBeDefined();
+      expect(actual?.id).toBe(createdUser.id);
     });
   });
 
   describe('Exists', () => {
     it('should return true if user exists', async () => {
       await repository.create(testUser);
-      const exists = await repository.exists(testUser.email);
+      const exists = await repository.exists(testUser.email as string);
 
       expect(exists).toBe(true);
     });
@@ -64,6 +67,7 @@ describe('InMemoryUserRepository', () => {
   describe('Update', () => {
     it('should update an existing user', async () => {
       const createdUser = await repository.create(testUser);
+      await wait(2000);
       const updatedUser = await repository.update({
         ...createdUser,
         email: 'updated@example.com'

@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-import { User } from '../models/User';
-
-export class UserRepository {
-  public async findByEmail(identifier: string): Promise<User | null> {
-    // TODO: Implement finding user by email
-    throw new Error('Not implemented');
-  }
-
-  public async findByUsername(identifier: string): Promise<User | null> {
-    // TODO: Implement finding user by email
-    throw new Error('Not implemented');
-  }
-
-  public async create(user: Omit<User, 'id'>): Promise<User> {
-    // TODO: Implement user creation
-    throw new Error('Not implemented');
-  }
+export interface UserCommandDto {
+  email?: string;
+  username?: string;
+  passwordHash: string;
 }

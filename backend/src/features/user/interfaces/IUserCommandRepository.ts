@@ -15,20 +15,12 @@
  */
 
 import { User } from '../models/User';
+import { UserCommandDto } from './UserCommandDto';
 
-export class UserRepository {
-  public async findByEmail(identifier: string): Promise<User | null> {
-    // TODO: Implement finding user by email
-    throw new Error('Not implemented');
-  }
-
-  public async findByUsername(identifier: string): Promise<User | null> {
-    // TODO: Implement finding user by email
-    throw new Error('Not implemented');
-  }
-
-  public async create(user: Omit<User, 'id'>): Promise<User> {
-    // TODO: Implement user creation
-    throw new Error('Not implemented');
-  }
+export interface IUserCommandRepository {
+  create(user: UserCommandDto): Promise<User>;
+  // TODO: define how to identify a user if changing values like username or email.
+  // Well leave this for now.
+  update(user: User): Promise<User>;
+  delete(userId: string): Promise<void>;
 }

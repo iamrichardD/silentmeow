@@ -1,17 +1,35 @@
+/*
+ * Copyright 2024 https://github.com/iamrichardD
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../models/User';
-import { IUserCommandRepository } from './IUserCommandRepository';
-import { IUserQueryRepository } from './IUserQueryRepository';
+import { UserCommandDto } from '../interfaces/UserCommandDto';
+import { IUserRepository } from '../interfaces/IUserRepository';
 
-export class InMemoryUserRepository implements IUserCommandRepository, IUserQueryRepository {
+export class InMemoryUserRepository implements IUserRepository {
   private users: User[] = [];
 
-  async create(userData: Omit<User, 'id'>): Promise<User> {
+  async create(userData: UserCommandDto): Promise<User> {
     const user: User = {
       id: uuidv4(),
-      ...userData,
-      createdAt: userData.createdAt || new Date(),
-      updatedAt: userData.updatedAt || new Date()
+      email: userData.email,
+      username: userData.username,
+      passwordHash: userData.passwordHash,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
 
     this.users.push(user);
@@ -27,7 +45,7 @@ export class InMemoryUserRepository implements IUserCommandRepository, IUserQuer
 
     this.users[index] = {
       ...user,
-      updatedAt: new Date()  // Always update updatedAt
+      updatedAt: new Date()
     };
 
     return this.users[index];
@@ -47,11 +65,23 @@ export class InMemoryUserRepository implements IUserCommandRepository, IUserQuer
     return this.users.find(u => u.email === email) || null;
   }
 
+  async findByUsername(username: string): Promise<User | null> {
+    return this.users.find(u => u.username === username) || null;
+  }
+
+  async findByIdentifier(identifier: string): Promise<User | null> {
+    return this.users.find(u =>
+      u.email === identifier || u.username === identifier
+    ) || null;
+  }
+
   async findById(id: string): Promise<User | null> {
     return this.users.find(u => u.id === id) || null;
   }
 
-  async exists(email: string): Promise<boolean> {
-    return this.users.some(u => u.email === email);
+  async exists(identifier: string): Promise<boolean> {
+    return this.users.some(u =>
+      u.email === identifier || u.username === identifier
+    );
   }
 }

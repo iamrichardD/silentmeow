@@ -15,20 +15,8 @@
  */
 
 import { User } from '../models/User';
+import { UserCommandDto } from './UserCommandDto';
+import { IUserCommandRepository } from './IUserCommandRepository';
+import { IUserQueryRepository } from './IUserQueryRepository';
 
-export class UserRepository {
-  public async findByEmail(identifier: string): Promise<User | null> {
-    // TODO: Implement finding user by email
-    throw new Error('Not implemented');
-  }
-
-  public async findByUsername(identifier: string): Promise<User | null> {
-    // TODO: Implement finding user by email
-    throw new Error('Not implemented');
-  }
-
-  public async create(user: Omit<User, 'id'>): Promise<User> {
-    // TODO: Implement user creation
-    throw new Error('Not implemented');
-  }
-}
+export interface IUserRepository extends IUserCommandRepository, IUserQueryRepository {}
