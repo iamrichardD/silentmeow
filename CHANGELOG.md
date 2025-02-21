@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ## [Unreleased]
 
 ### Added
+- PostgreSQL database migrations
+    - CQRS user and schema setup
+    - User table with soft delete support
+    - Optimized indices for email and username
+- Environment-based database configuration
+- Docker environment setup for PostgreSQL 16
 - Implemented CQRS-based user repository interfaces
 - Added local authentication strategy with tests
 - Created in-memory user repository for testing
@@ -53,7 +59,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Updated Docker base image to Node.js 22
 
 ### Security
+- Secured database credentials using environment variables
+- Implemented CQRS-based database access control
 - Prepared initial security considerations for backend development
 - Implemented basic Docker container best practices
 - Defined JWT-based authentication approach
 - Implemented robust configuration management
+-
