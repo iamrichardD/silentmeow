@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 https://github.com/iamrichardD
+ * Copyright 2024 https://github.com/iamrichardd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-export interface UserCommandDto {
-  email: string;
-  username: string;
-  passwordHash: string;
+export interface ICacheService {
+  get<T>(key: string): Promise<T | null>;
+  set<T>(key: string, value: T, ttlSeconds?: number): Promise<void>;
+  delete(key: string): Promise<void>;
+  clear(): Promise<void>;
 }

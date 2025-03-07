@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 https://github.com/iamrichardD
+ * Copyright 2024 https://github.com/iamrichardd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,23 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../models/User';
-import { UserCommandDto } from '../interfaces/UserCommandDto';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { User } from '../../../models/User';
+import { UserCommandDto } from '../../../interfaces/UserCommandDto';
+import { IUserRepository } from '../../../interfaces/IUserRepository';
 
 export class InMemoryUserRepository implements IUserRepository {
   private users: User[] = [];
 
   async create(userData: UserCommandDto): Promise<User> {
+    const now = new Date();
     const user: User = {
       id: uuidv4(),
       email: userData.email,
       username: userData.username,
       passwordHash: userData.passwordHash,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null
     };
 
     this.users.push(user);
@@ -43,8 +45,11 @@ export class InMemoryUserRepository implements IUserRepository {
       throw new Error('User not found');
     }
 
+    const originalCreatedAt = this.users[index].createdAt;
+
     this.users[index] = {
       ...user,
+      createdAt: originalCreatedAt,
       updatedAt: new Date()
     };
 

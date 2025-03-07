@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 https://github.com/iamrichardD
+ * Copyright 2024 https://github.com/iamrichardd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { UserQueryDto } from '../interfaces/UserQueryDto';
+// backend/src/features/user/models/User.ts
 
-export interface User extends UserQueryDto {
+export interface User {
+  id: string;
+  email: string;
+  username: string;
   passwordHash: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;  // Making deletedAt optional and allowing null
 }
