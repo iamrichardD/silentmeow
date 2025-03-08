@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { InMemoryUserRepository } from '../InMemoryUserRepository';
-import { User } from '../../models/User';
+import { User } from '../../../../models/User';
 
 const wait = async (ms: number) => {
   await new Promise(resolve => setTimeout(resolve, ms));
@@ -81,6 +81,7 @@ describe('InMemoryUserRepository', () => {
       await expect(repository.update({
         id: 'nonexistent',
         email: 'test@example.com',
+        username: 'testuser', // Add this line
         passwordHash: 'hash',
         createdAt: new Date(),
         updatedAt: new Date()

@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ## [Unreleased]
 
 ### Added
+- Comprehensive caching system
+    - In-memory cache service implementation
+    - Cache key generator with PII protection
+    - TTL (Time To Live) support for cache entries
+- Enhanced token management with cache integration
+    - Token caching for improved validation performance
+    - Immediate token invalidation capabilities
+    - Configurable token expiration settings
+- Security improvements for authentication
+    - Protection against token replay attacks
+    - Foundation for rate limiting
+    - PII protection in cache keys
 - PostgreSQL database migrations
     - CQRS user and schema setup
     - User table with soft delete support
