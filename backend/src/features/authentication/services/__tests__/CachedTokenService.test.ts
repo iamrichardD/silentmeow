@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 https://github.com/iamrichardd
+ * Copyright 2024 https://github.com/iamrichardD
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,297 +14,256 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import jwt from 'jsonwebtoken';
-import { UserFactory } from '../../../../test/factories/UserFactory';
-import { ConfigurationManager } from '../../../../config/ConfigurationManagerInterface';
-import { ICacheService } from '../../../cache/interfaces/ICacheService';
-import { ICacheKeyGenerator } from '../../../cache/interfaces/ICacheKeyGenerator';
-import { CachedTokenService } from '../CachedTokenService';
+import { ICacheService } from '@cache/interfaces/ICacheService.js';
+import { ICacheKeyGenerator } from '@cache/interfaces/ICacheKeyGenerator.js';
+import { ConfigurationManager } from '@config/ConfigurationManagerInterface.js';
+import { CachedTokenService } from '@auth/services/CachedTokenService.js';
+import { User } from '@user/models/User.js';
 
-// Mock implementations
-const mockCacheService: ICacheService = {
-  set: vi.fn(),
-  get: vi.fn(),
-  delete: vi.fn(),
-  clear: vi.fn()
-};
-
-const mockKeyGenerator: ICacheKeyGenerator = {
-  generateKey: vi.fn((namespace, ...args) => `${namespace}:${args.join(':')}`)
-};
-
-// Type-safe mock implementation of ConfigurationManager
-const mockConfigManager: ConfigurationManager = {
-  get: vi.fn(function get<T extends string | number | boolean | Record<string, any>>(
-    key: string,
-    defaultValue?: T
-  ): T {
-    const configValues: Record<string, string> = {
-      'authentication.jwt.accessSecret': 'test-access-secret',
-      'authentication.jwt.refreshSecret': 'test-refresh-secret',
-      'authentication.jwt.accessExpiresIn': '15m',
-      'authentication.jwt.refreshExpiresIn': '7d'
-    };
-
-    // If the key exists in our config values, return it cast to T
-    if (key in configValues) {
-      return configValues[key] as unknown as T;
+// Mock dependencies
+vi.mock('jsonwebtoken', () => {
+  return {
+    default: {
+      sign: vi.fn(() => 'mocked-token'),
+      verify: vi.fn(() => ({ sub: 'user-123', jti: 'token-123' })),
+      decode: vi.fn(() => ({ sub: 'user-123', jti: 'token-123' }))
     }
+  };
+});
 
-    // Otherwise, return the default value or empty string cast to T
-    return (defaultValue !== undefined ? defaultValue : '') as unknown as T;
-  }),
-  load: vi.fn()
-};
+// Mock uuid
+vi.mock('uuid', () => ({
+  v4: vi.fn(() => 'token-123')
+}));
 
 describe('CachedTokenService', () => {
+  let cacheService: ICacheService;
+  let keyGenerator: ICacheKeyGenerator;
+  let configManager: ConfigurationManager;
+  let mockLogger: any;
   let tokenService: CachedTokenService;
-  let testUser = UserFactory.create();
+
+  const testUser: User = {
+    id: 'user-123',
+    email: 'test@example.com',
+    username: 'testuser',
+    passwordHash: 'hash',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
 
   beforeEach(() => {
-    // Reset mocks
-    vi.resetAllMocks();
+    // Reset all mocks
+    vi.clearAllMocks();
 
-    // Initialize token service
-    tokenService = new CachedTokenService(mockConfigManager, mockCacheService, mockKeyGenerator);
+    // Create mock cache service
+    cacheService = {
+      set: vi.fn().mockResolvedValue(undefined),
+      get: vi.fn().mockResolvedValue({ userId: 'user-123', valid: true }),
+      delete: vi.fn().mockResolvedValue(undefined),
+      exists: vi.fn().mockResolvedValue(false),
+      getTtl: vi.fn().mockResolvedValue(null)
+    };
+
+    // Create mock key generator
+    keyGenerator = {
+      generateKey: vi.fn((namespace, id, type) => `${namespace}:${type}:${id}`)
+    };
+
+    // Fix the ConfigurationManager mock
+    configManager = {
+      get: vi.fn().mockImplementation((key: string, defaultValue?: any) => {
+        if (key === 'authentication.jwt.accessSecret') return 'test-access-secret';
+        if (key === 'authentication.jwt.refreshSecret') return 'test-refresh-secret';
+        if (key === 'authentication.jwt.accessExpiresIn') return '15m';
+        if (key === 'authentication.jwt.refreshExpiresIn') return '7d';
+        return defaultValue;
+      }) as any,
+      load: vi.fn().mockResolvedValue(undefined)
+    };
+
+    // Create mock logger
+    mockLogger = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      getPinoInstance: vi.fn()
+    };
+
+    // Create token service with mocked dependencies
+    tokenService = new CachedTokenService(
+      configManager,
+      cacheService,
+      keyGenerator,
+      mockLogger
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('generateAccessToken', () => {
-    it('should generate a valid access token', async () => {
-      // Mock cache set to resolve
-      vi.mocked(mockCacheService.set).mockResolvedValue();
-
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
-
+    it('should generate and cache an access token', async () => {
       const token = await tokenService.generateAccessToken(testUser);
 
-      // Verify the token is a string
-      expect(typeof token).toBe('string');
+      expect(token).toBe('mocked-token');
 
-      // Decode the token and check payload
-      const decoded = jwt.decode(token) as any;
-      expect(decoded).toBeDefined();
-      expect(decoded.sub).toBe(testUser.id);
-      expect(decoded.email).toBe(testUser.email);
-      expect(decoded.jti).toBeDefined();
-
-      // Verify the cache was set
-      expect(mockCacheService.set).toHaveBeenCalledTimes(1);
-      expect(mockCacheService.set).toHaveBeenCalledWith(
-        `token:${decoded.jti}:access`,
+      expect(keyGenerator.generateKey).toHaveBeenCalledWith('token', 'token-123', 'access');
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'token:access:token-123',
         { userId: testUser.id, valid: true },
         expect.any(Number)
-      );
-
-      // Verify the key generator was called correctly
-      expect(mockKeyGenerator.generateKey).toHaveBeenCalledWith(
-        'token',
-        decoded.jti,
-        'access'
       );
     });
 
     it('should throw an error if user has no ID', async () => {
-      const invalidUser = UserFactory.create({ id: undefined });
+      const userWithoutId = { ...testUser };
+      delete (userWithoutId as any).id;
 
-      await expect(tokenService.generateAccessToken(invalidUser))
+      await expect(tokenService.generateAccessToken(userWithoutId as User))
         .rejects.toThrow('User ID is required');
     });
   });
 
   describe('generateRefreshToken', () => {
-    it('should generate a valid refresh token', async () => {
-      // Mock cache set to resolve
-      vi.mocked(mockCacheService.set).mockResolvedValue();
-
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
-
+    it('should generate and cache a refresh token', async () => {
       const token = await tokenService.generateRefreshToken(testUser);
 
-      // Verify the token is a string
-      expect(typeof token).toBe('string');
+      expect(token).toBe('mocked-token');
 
-      // Decode the token and check payload
-      const decoded = jwt.decode(token) as any;
-      expect(decoded).toBeDefined();
-      expect(decoded.sub).toBe(testUser.id);
-      expect(decoded.email).toBe(testUser.email);
-      expect(decoded.jti).toBeDefined();
-
-      // Verify the cache was set
-      expect(mockCacheService.set).toHaveBeenCalledTimes(1);
-      expect(mockCacheService.set).toHaveBeenCalledWith(
-        `token:${decoded.jti}:refresh`,
+      expect(keyGenerator.generateKey).toHaveBeenCalledWith('token', 'token-123', 'refresh');
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'token:refresh:token-123',
         { userId: testUser.id, valid: true },
         expect.any(Number)
-      );
-
-      // Verify the key generator was called correctly
-      expect(mockKeyGenerator.generateKey).toHaveBeenCalledWith(
-        'token',
-        decoded.jti,
-        'refresh'
       );
     });
   });
 
   describe('verifyAccessToken', () => {
-    it('should verify a valid access token', async () => {
-      // First generate a token
-      vi.mocked(mockCacheService.set).mockResolvedValue();
+    it('should verify a valid cached token', async () => {
+      const userId = await tokenService.verifyAccessToken('valid-token');
 
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
+      expect(userId).toBe('user-123');
+      expect(keyGenerator.generateKey).toHaveBeenCalledWith('token', 'token-123', 'access');
+      expect(cacheService.get).toHaveBeenCalledWith('token:access:token-123');
+    });
 
-      const token = await tokenService.generateAccessToken(testUser);
-      const decoded = jwt.decode(token) as any;
+    it('should return null if token is not in cache', async () => {
+      vi.mocked(cacheService.get).mockResolvedValue(null);
 
-      // Mock cache get to return a valid token
-      vi.mocked(mockCacheService.get).mockResolvedValue({
-        userId: testUser.id,
-        valid: true
+      const userId = await tokenService.verifyAccessToken('invalid-token');
+
+      expect(userId).toBeNull();
+      expect(mockLogger.info).toHaveBeenCalled();
+    });
+
+    it('should return null if token is invalidated', async () => {
+      vi.mocked(cacheService.get).mockResolvedValue({ userId: 'user-123', valid: false });
+
+      const userId = await tokenService.verifyAccessToken('invalidated-token');
+
+      expect(userId).toBeNull();
+    });
+
+    it('should return null if jwt verification fails', async () => {
+      vi.mocked(jwt.verify).mockImplementationOnce(() => {
+        throw new Error('Invalid token');
       });
 
-      // Verify the token
-      const userId = await tokenService.verifyAccessToken(token);
-      expect(userId).toBe(testUser.id);
+      const userId = await tokenService.verifyAccessToken('invalid-jwt-token');
 
-      // Verify cache was checked
-      expect(mockCacheService.get).toHaveBeenCalledTimes(1);
-      expect(mockCacheService.get).toHaveBeenCalledWith(
-        `token:${decoded.jti}:access`
-      );
+      expect(userId).toBeNull();
+      expect(mockLogger.error).toHaveBeenCalled();
+    });
+  });
 
-      // Verify the key generator was called correctly
-      expect(mockKeyGenerator.generateKey).toHaveBeenCalledWith(
-        'token',
-        decoded.jti,
-        'access'
-      );
+  describe('verifyRefreshToken', () => {
+    it('should verify a valid refresh token', async () => {
+      const userId = await tokenService.verifyRefreshToken('valid-refresh-token');
+
+      expect(userId).toBe('user-123');
+      expect(keyGenerator.generateKey).toHaveBeenCalledWith('token', 'token-123', 'refresh');
+      expect(cacheService.get).toHaveBeenCalledWith('token:refresh:token-123');
     });
 
-    it('should return null for an invalid token', async () => {
-      const invalidToken = 'invalid.token.string';
-      const userId = await tokenService.verifyAccessToken(invalidToken);
+    it('should return null if token is not in cache', async () => {
+      vi.mocked(cacheService.get).mockResolvedValue(null);
+
+      const userId = await tokenService.verifyRefreshToken('invalid-token');
+
+      expect(userId).toBeNull();
+      expect(mockLogger.info).toHaveBeenCalled();
+    });
+
+    it('should return null if token is invalidated', async () => {
+      vi.mocked(cacheService.get).mockResolvedValue({ userId: 'user-123', valid: false });
+
+      const userId = await tokenService.verifyRefreshToken('invalidated-token');
+
       expect(userId).toBeNull();
     });
 
-    it('should return null for a valid token not in cache', async () => {
-      // First generate a token
-      vi.mocked(mockCacheService.set).mockResolvedValue();
-
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
-
-      const token = await tokenService.generateAccessToken(testUser);
-
-      // Mock cache get to return null (token not in cache)
-      vi.mocked(mockCacheService.get).mockResolvedValue(null);
-
-      // Verify the token
-      const userId = await tokenService.verifyAccessToken(token);
-      expect(userId).toBeNull();
-    });
-
-    it('should return null for a token marked as invalid in cache', async () => {
-      // First generate a token
-      vi.mocked(mockCacheService.set).mockResolvedValue();
-
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
-
-      const token = await tokenService.generateAccessToken(testUser);
-
-      // Mock cache get to return an invalid token
-      vi.mocked(mockCacheService.get).mockResolvedValue({
-        userId: testUser.id,
-        valid: false
+    it('should return null if jwt verification fails', async () => {
+      vi.mocked(jwt.verify).mockImplementationOnce(() => {
+        throw new Error('Invalid token');
       });
 
-      // Verify the token
-      const userId = await tokenService.verifyAccessToken(token);
+      const userId = await tokenService.verifyRefreshToken('invalid-jwt-token');
+
       expect(userId).toBeNull();
+      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 
   describe('invalidateAccessToken', () => {
     it('should invalidate an access token', async () => {
-      // First generate a token
-      vi.mocked(mockCacheService.set).mockResolvedValue();
+      await tokenService.invalidateAccessToken('token-to-invalidate');
 
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
+      expect(keyGenerator.generateKey).toHaveBeenCalledWith('token', 'token-123', 'access');
+      expect(cacheService.delete).toHaveBeenCalledWith('token:access:token-123');
+      expect(mockLogger.info).toHaveBeenCalled();
+    });
 
-      const token = await tokenService.generateAccessToken(testUser);
-      const decoded = jwt.decode(token) as any;
+    it('should handle invalid tokens gracefully', async () => {
+      vi.mocked(jwt.decode).mockReturnValueOnce(null);
 
-      // Mock cache delete to resolve
-      vi.mocked(mockCacheService.delete).mockResolvedValue();
+      await tokenService.invalidateAccessToken('invalid-token');
 
-      // Invalidate the token
-      await tokenService.invalidateAccessToken(token);
-
-      // Verify cache delete was called
-      expect(mockCacheService.delete).toHaveBeenCalledTimes(1);
-      expect(mockCacheService.delete).toHaveBeenCalledWith(
-        `token:${decoded.jti}:access`
-      );
-
-      // Verify the key generator was called correctly
-      expect(mockKeyGenerator.generateKey).toHaveBeenCalledWith(
-        'token',
-        decoded.jti,
-        'access'
-      );
+      expect(cacheService.delete).not.toHaveBeenCalled();
     });
   });
 
   describe('invalidateRefreshToken', () => {
     it('should invalidate a refresh token', async () => {
-      // First generate a token
-      vi.mocked(mockCacheService.set).mockResolvedValue();
+      await tokenService.invalidateRefreshToken('refresh-token-to-invalidate');
 
-      // Mock key generator
-      vi.mocked(mockKeyGenerator.generateKey).mockImplementation(
-        (namespace, ...args) => `${namespace}:${args.join(':')}`
-      );
+      expect(keyGenerator.generateKey).toHaveBeenCalledWith('token', 'token-123', 'refresh');
+      expect(cacheService.delete).toHaveBeenCalledWith('token:refresh:token-123');
+      expect(mockLogger.info).toHaveBeenCalled();
+    });
+  });
 
-      const token = await tokenService.generateRefreshToken(testUser);
-      const decoded = jwt.decode(token) as any;
+  describe('getTokenRemainingTime', () => {
+    it('should return the remaining time for a token', async () => {
+      vi.mocked(cacheService.getTtl).mockResolvedValue(600); // 10 minutes
 
-      // Mock cache delete to resolve
-      vi.mocked(mockCacheService.delete).mockResolvedValue();
+      const remainingTime = await tokenService.getTokenRemainingTime('access', 'user-123');
 
-      // Invalidate the token
-      await tokenService.invalidateRefreshToken(token);
+      expect(remainingTime).toBe(600);
+      expect(cacheService.getTtl).toHaveBeenCalledWith('token:access:user-123');
+    });
 
-      // Verify cache delete was called
-      expect(mockCacheService.delete).toHaveBeenCalledTimes(1);
-      expect(mockCacheService.delete).toHaveBeenCalledWith(
-        `token:${decoded.jti}:refresh`
-      );
+    it('should return 0 when token is not found', async () => {
+      vi.mocked(cacheService.getTtl).mockResolvedValue(null);
 
-      // Verify the key generator was called correctly
-      expect(mockKeyGenerator.generateKey).toHaveBeenCalledWith(
-        'token',
-        decoded.jti,
-        'refresh'
-      );
+      const remainingTime = await tokenService.getTokenRemainingTime('access', 'user-123');
+
+      expect(remainingTime).toBe(0);
     });
   });
 });

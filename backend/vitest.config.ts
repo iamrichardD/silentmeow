@@ -1,16 +1,25 @@
 import { defineConfig } from 'vitest/config';
-import * as path from 'path';
+import { resolve } from 'path';
 
 export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html']
-    },
+    include: ['src/**/*.test.ts'],
+    exclude: ['node_modules', 'dist']
+  },
+  resolve: {
     alias: {
-      '@/': path.resolve(process.cwd(), './src')
+      '@config': resolve(__dirname, './src/config'),
+      '@features': resolve(__dirname, './src/features'),
+      '@auth': resolve(__dirname, './src/features/authentication'),
+      '@user': resolve(__dirname, './src/features/user'),
+      '@cache': resolve(__dirname, './src/features/cache'),
+      '@logging': resolve(__dirname, './src/features/logging'),
+      '@security': resolve(__dirname, './src/features/security'),
+      '@web': resolve(__dirname, './src/features/web-server'),
+      '@test': resolve(__dirname, './src/test'),
+      '@': resolve(__dirname, './src')
     }
   }
 });

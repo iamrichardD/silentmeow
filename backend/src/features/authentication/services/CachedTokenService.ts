@@ -17,11 +17,11 @@
 import jwt, { Secret, SignOptions, VerifyOptions, JwtPayload } from 'jsonwebtoken';
 import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../../user/models/User';
-import { ICacheService } from '../../cache/interfaces/ICacheService';
-import { ICacheKeyGenerator } from '../../cache/interfaces/ICacheKeyGenerator';
-import { ConfigurationManager } from '../../../config/ConfigurationManagerInterface';
-import { Logger } from '../../logging/Logger';
+import { Logger } from '@logging/Logger.js';
+import { ConfigurationManager } from '@config/ConfigurationManagerInterface.js';
+import { ICacheService } from '@cache/interfaces/ICacheService.js';
+import { ICacheKeyGenerator } from '@cache/interfaces/ICacheKeyGenerator.js';
+import { User } from '@user/models/User.js';
 
 interface TokenPayload {
   sub: string;        // Subject (user ID)
@@ -176,6 +176,18 @@ export class CachedTokenService {
       }
       return null;
     }
+  }
+
+  /**
+   * Gets the remaining time in seconds for a token
+   * @param tokenType The type of token ('access' or 'refresh')
+   * @param userId The user ID
+   * @returns Remaining time in seconds, or 0 if token not found
+   */
+  public async getTokenRemainingTime(tokenType: 'access' | 'refresh', userId: string): Promise<number> {
+    const key = `token:${tokenType}:${userId}`;
+    const ttl = await this.cacheService.getTtl(key);
+    return ttl ?? 0;
   }
 
   /**

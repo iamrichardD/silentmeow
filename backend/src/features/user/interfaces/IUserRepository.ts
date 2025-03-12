@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { User } from '../models/User';
-import { UserCommandDto } from './UserCommandDto';
-import { IUserCommandRepository } from './IUserCommandRepository';
-import { IUserQueryRepository } from './IUserQueryRepository';
+import { IUserCommandRepository } from '@user/interfaces/IUserCommandRepository.js';
+import { IUserQueryRepository } from '@user/interfaces/IUserQueryRepository.js';
 
 export interface IUserRepository extends IUserCommandRepository, IUserQueryRepository {}

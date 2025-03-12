@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { PasswordService } from '../PasswordService';
+import { PasswordService } from '@auth/services/PasswordService.js';
 
 describe('PasswordService', () => {
   const passwordService = new PasswordService();
@@ -24,7 +24,7 @@ describe('PasswordService', () => {
     it('should hash a password', async () => {
       const password = 'testPassword123';
       const hashedPassword = await passwordService.hash(password);
-      
+
       expect(hashedPassword).toBeTruthy();
       expect(hashedPassword).not.toBe(password);
     });
@@ -33,7 +33,7 @@ describe('PasswordService', () => {
       const password = 'testPassword123';
       const hashedPassword1 = await passwordService.hash(password);
       const hashedPassword2 = await passwordService.hash(password);
-      
+
       expect(hashedPassword1).not.toBe(hashedPassword2);
     });
   });
@@ -42,7 +42,7 @@ describe('PasswordService', () => {
     it('should return true for matching password', async () => {
       const password = 'testPassword123';
       const hashedPassword = await passwordService.hash(password);
-      
+
       const isMatch = await passwordService.compare(password, hashedPassword);
       expect(isMatch).toBe(true);
     });
@@ -51,7 +51,7 @@ describe('PasswordService', () => {
       const password = 'testPassword123';
       const wrongPassword = 'wrongPassword';
       const hashedPassword = await passwordService.hash(password);
-      
+
       const isMatch = await passwordService.compare(wrongPassword, hashedPassword);
       expect(isMatch).toBe(false);
     });

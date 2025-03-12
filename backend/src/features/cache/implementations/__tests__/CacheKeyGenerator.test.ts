@@ -18,9 +18,9 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createHash } from 'crypto';
-import { CacheKeyGenerator } from '../CacheKeyGenerator';
-import { ICacheKeyGenerator } from '../../interfaces/ICacheKeyGenerator';
-import { UserFactory } from '../../../../test/factories/UserFactory';
+import { ICacheKeyGenerator } from '@cache/interfaces/ICacheKeyGenerator.js';
+import { CacheKeyGenerator } from '@cache/implementations/CacheKeyGenerator.js';
+import { UserFactory } from '@test/factories/UserFactory.js';
 
 describe('CacheKeyGenerator', () => {
   let generator: ICacheKeyGenerator;

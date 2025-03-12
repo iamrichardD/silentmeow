@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { RegistrationValidationService } from '../RegistrationValidationService';
-import { IRegisterRequest } from '../../contracts/IRegisterRequest';
+import { describe, it, expect } from 'vitest';
+import { RegistrationValidationService } from '@auth/services/RegistrationValidationService.js';
+import { IRegisterRequest } from '@auth/contracts/IRegisterRequest.js';
 
 describe('RegistrationValidationService', () => {
   const validationService = new RegistrationValidationService();

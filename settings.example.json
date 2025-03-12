@@ -26,5 +26,12 @@
       "secret": "development_secret",
       "expiresIn": "1h"
     }
+  },
+  "security": {
+    "rateLimit": {
+      "maxAttempts": 10,
+      "windowSeconds": 900,
+      "blockDurationSeconds": 900
+    }
   }
 }

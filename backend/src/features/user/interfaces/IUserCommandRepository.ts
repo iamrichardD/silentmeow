@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { User } from '../models/User';
-import { UserCommandDto } from './UserCommandDto';
+import { UserCommandDto } from '@user/interfaces/UserCommandDto.js';
+import { User } from '@user/models/User.js';
 
 export interface IUserCommandRepository {
   create(user: UserCommandDto): Promise<User>;

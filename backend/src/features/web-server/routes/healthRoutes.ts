@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { HealthController } from '../controllers/HealthController';
+import { HealthController } from '@web/controllers/HealthController.js';
 
 export function healthRoutes(
   fastify: FastifyInstance,

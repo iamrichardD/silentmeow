@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES6",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -10,6 +10,19 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@features/*": ["features/*"],
+      "@auth/*": ["features/authentication/*"],
+      "@user/*": ["features/user/*"],
+      "@cache/*": ["features/cache/*"],
+      "@logging/*": ["features/logging/*"],
+      "@security/*": ["features/security/*"],
+      "@web/*": ["features/web-server/*"],
+      "@test/*": ["test/*"],
+      "@/*": ["*"]
+    },
     "types": ["vitest/importMeta", "vitest/globals"]
   },
   "include": ["src/**/*"],

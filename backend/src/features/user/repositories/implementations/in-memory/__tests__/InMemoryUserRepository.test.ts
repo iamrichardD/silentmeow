@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { InMemoryUserRepository } from '../InMemoryUserRepository';
-import { User } from '../../../../models/User';
+import { InMemoryUserRepository } from '@user/repositories/implementations/in-memory/InMemoryUserRepository.js';
+import { User } from '@user/models/User.js';
 
 const wait = async (ms: number) => {
   await new Promise(resolve => setTimeout(resolve, ms));

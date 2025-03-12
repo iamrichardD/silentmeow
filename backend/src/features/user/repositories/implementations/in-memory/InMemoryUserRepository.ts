@@ -15,9 +15,9 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../../../models/User';
-import { UserCommandDto } from '../../../interfaces/UserCommandDto';
-import { IUserRepository } from '../../../interfaces/IUserRepository';
+import { UserCommandDto } from '@user/interfaces/UserCommandDto.js';
+import { IUserRepository } from '@user/interfaces/IUserRepository.js';
+import { User } from '@user/models/User.js';
 
 export class InMemoryUserRepository implements IUserRepository {
   private users: User[] = [];

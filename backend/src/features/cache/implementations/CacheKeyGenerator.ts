@@ -17,8 +17,8 @@
 // backend/src/features/cache/implementations/CacheKeyGenerator.ts
 
 import { createHash } from 'crypto';
-import { ICacheKeyGenerator } from '../interfaces/ICacheKeyGenerator';
-import { User } from '../../user/models/User';
+import { ICacheKeyGenerator } from '@cache/interfaces/ICacheKeyGenerator.js';
+import { User } from '@user/models/User.js';
 
 export class CacheKeyGenerator implements ICacheKeyGenerator {
   private readonly MAX_KEY_LENGTH = 100;

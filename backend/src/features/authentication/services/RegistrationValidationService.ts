@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { IRegisterRequest } from '../contracts/IRegisterRequest';
+import { IRegisterRequest } from '@auth/contracts/IRegisterRequest.js';
 
 export class RegistrationValidationService {
   public validateEmail(email: string): void {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     if (!email || !emailRegex.test(email)) {
       throw new Error('Invalid email address');
     }
@@ -32,7 +32,7 @@ export class RegistrationValidationService {
     // - Contains a number
     // - Contains a special character
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
-    
+
     if (!password || !passwordRegex.test(password)) {
       throw new Error('Password does not meet strength requirements');
     }

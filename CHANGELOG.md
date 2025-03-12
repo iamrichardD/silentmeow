@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ## [Unreleased]
 
 ### Added
+- Vite build system for improved module bundling
+- Path alias support for cleaner imports (@config, @features, etc.)
+- Rate limiting for authentication endpoints
+- Authentication controllers and routes
+- Security module with rate limiting support
 - Comprehensive caching system
     - In-memory cache service implementation
     - Cache key generator with PII protection
@@ -37,6 +42,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Restructured project to follow Vertical Slice Architecture
 
 ### Changed
+- Updated WebServerService to use Fastify's built-in logger configuration
+- Improved error handling in authentication flows
+- Enhanced configuration loading in ES modules environment
+- Updated Docker configuration for better development experience
 - Reorganized authentication and user management interfaces
 - Updated logging configuration to support development and production environments
 - Improved Docker build and configuration strategies
@@ -44,6 +53,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Improved configuration management approach
 
 ### Fixed
+- Resolved path resolution issues in ES module environment
+- Fixed configuration loading in containerized environments
+- Improved TypeScript module resolution with proper aliases
+- Enhanced logger initialization for better compatibility with Fastify
 - Implemented type-safe configuration management
 - Improved environment variable handling
 - Enhanced configuration retrieval logic

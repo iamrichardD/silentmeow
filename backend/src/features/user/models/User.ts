@@ -23,5 +23,5 @@ export interface User {
   passwordHash: string;
   createdAt: Date;
   updatedAt: Date;
-  deletedAt?: Date | null;  // Making deletedAt optional and allowing null
+  deletedAt?: Date | null;
 }

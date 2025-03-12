@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ConfigurationManager } from './ConfigurationManagerInterface';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { ConfigurationManager } from '@config/ConfigurationManagerInterface.js';
 
 interface ConfigurationRecord {
   [key: string]: string | number | boolean | ConfigurationRecord | undefined;
@@ -26,10 +28,14 @@ export class HierarchicalConfigurationManager implements ConfigurationManager {
   }
 
   private findConfigPath(): string {
+    // Get current file's path in ESM
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
     const searchPaths = [
       process.cwd(),
       path.join(process.cwd(), 'config'),
-      path.join(__dirname, '..', '..', '..', 'settings.json'), // Look in project root
+      path.join(__dirname, '..', '..', 'settings.json'), // Look in project root
       path.join(__dirname, '..', 'config'),
       '/app/settings.json' // Docker container path
     ];

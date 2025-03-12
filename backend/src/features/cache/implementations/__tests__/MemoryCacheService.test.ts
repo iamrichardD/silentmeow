@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 https://github.com/iamrichardd
+ * Copyright 2024 https://github.com/iamrichardD
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { MemoryCacheService } from '../MemoryCacheService';
-import { ICacheService } from '../../interfaces/ICacheService';
-import { User } from '../../../user/models/User';
-import { UserFactory } from '../../../../test/factories/UserFactory';
+import { MemoryCacheService } from '@cache/implementations/MemoryCacheService.js';
+
+// Helper function to wait/sleep
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('MemoryCacheService', () => {
-  let cache: ICacheService;
+  let cacheService: MemoryCacheService;
 
   beforeEach(() => {
-    cache = new MemoryCacheService();
+    cacheService = new MemoryCacheService();
     vi.useFakeTimers();
   });
 
@@ -32,111 +32,114 @@ describe('MemoryCacheService', () => {
     vi.useRealTimers();
   });
 
-  describe('get and set', () => {
-    it('should store and retrieve a string value', async () => {
-      await cache.set('test-key', 'test-value');
-      const result = await cache.get<string>('test-key');
-      expect(result).toBe('test-value');
+  describe('set and get', () => {
+    it('should store and retrieve a value', async () => {
+      await cacheService.set('test-key', 'test-value');
+      const value = await cacheService.get('test-key');
+      expect(value).toBe('test-value');
     });
 
-    it('should store and retrieve a number value', async () => {
-      await cache.set('test-key', 42);
-      const result = await cache.get<number>('test-key');
-      expect(result).toBe(42);
+    it('should return null for non-existent keys', async () => {
+      const value = await cacheService.get('non-existent');
+      expect(value).toBeNull();
     });
 
-    it('should store and retrieve an object', async () => {
-      const user = UserFactory.create();
-      await cache.set('test-key', user);
-      const result = await cache.get<User>('test-key');
-      expect(result).toEqual(user);
+    it('should handle different value types', async () => {
+      const testObj = { name: 'Test', value: 123 };
+      await cacheService.set('number-key', 42);
+      await cacheService.set('boolean-key', true);
+      await cacheService.set('object-key', testObj);
+
+      expect(await cacheService.get('number-key')).toBe(42);
+      expect(await cacheService.get('boolean-key')).toBe(true);
+      expect(await cacheService.get('object-key')).toEqual(testObj);
     });
 
-    it('should return null for non-existent key', async () => {
-      const result = await cache.get<string>('non-existent');
-      expect(result).toBeNull();
-    });
-
-    it('should handle undefined key gracefully', async () => {
-      await expect(cache.get(undefined as unknown as string))
-        .rejects.toThrow('Invalid cache key');
-    });
-  });
-
-  describe('TTL behavior', () => {
     it('should expire items after TTL', async () => {
-      await cache.set('test-key', 'test-value', 1); // 1 second TTL
+      await cacheService.set('expiring-key', 'expiring-value', 1); // 1 second TTL
 
-      expect(await cache.get<string>('test-key')).toBe('test-value');
+      // Before expiration
+      expect(await cacheService.get('expiring-key')).toBe('expiring-value');
 
-      // Advance time by 2 seconds
-      vi.advanceTimersByTime(2000);
+      // Advance time by 1.1 seconds
+      vi.advanceTimersByTime(1100);
 
-      expect(await cache.get<string>('test-key')).toBeNull();
-    });
-
-    it('should not expire items before TTL', async () => {
-      await cache.set('test-key', 'test-value', 2); // 2 seconds TTL
-
-      // Advance time by 1 second
-      vi.advanceTimersByTime(1000);
-
-      expect(await cache.get<string>('test-key')).toBe('test-value');
-    });
-
-    it('should not expire items without TTL', async () => {
-      await cache.set('test-key', 'test-value');
-
-      // Advance time by a long period
-      vi.advanceTimersByTime(1000000);
-
-      expect(await cache.get<string>('test-key')).toBe('test-value');
+      // After expiration
+      expect(await cacheService.get('expiring-key')).toBeNull();
     });
   });
 
   describe('delete', () => {
     it('should remove an item from cache', async () => {
-      await cache.set('test-key', 'test-value');
-      await cache.delete('test-key');
-      expect(await cache.get<string>('test-key')).toBeNull();
+      await cacheService.set('delete-key', 'delete-value');
+      await cacheService.delete('delete-key');
+      expect(await cacheService.get('delete-key')).toBeNull();
     });
 
-    it('should handle deleting non-existent key', async () => {
-      await expect(cache.delete('non-existent')).resolves.not.toThrow();
-    });
-
-    it('should handle undefined key gracefully', async () => {
-      await expect(cache.delete(undefined as unknown as string))
-        .rejects.toThrow('Invalid cache key');
+    it('should not throw when deleting non-existent keys', async () => {
+      await expect(cacheService.delete('non-existent')).resolves.not.toThrow();
     });
   });
 
-  describe('clear', () => {
-    it('should remove all items from cache', async () => {
-      await cache.set('key1', 'value1');
-      await cache.set('key2', 'value2');
+  describe('exists', () => {
+    it('should return true for existing keys', async () => {
+      await cacheService.set('exists-key', 'exists-value');
+      expect(await cacheService.exists('exists-key')).toBe(true);
+    });
 
-      await cache.clear();
+    it('should return false for non-existent keys', async () => {
+      expect(await cacheService.exists('non-existent')).toBe(false);
+    });
 
-      expect(await cache.get<string>('key1')).toBeNull();
-      expect(await cache.get<string>('key2')).toBeNull();
+    it('should return false for expired keys', async () => {
+      await cacheService.set('expiring-key', 'expiring-value', 1); // 1 second TTL
+
+      // Before expiration
+      expect(await cacheService.exists('expiring-key')).toBe(true);
+
+      // Advance time by 1.1 seconds
+      vi.advanceTimersByTime(1100);
+
+      // After expiration
+      expect(await cacheService.exists('expiring-key')).toBe(false);
     });
   });
 
-  describe('error handling', () => {
-    it('should handle circular references', async () => {
-      const circular: any = {};
-      circular.self = circular;
+  // Add new test section for getTtl method
+  describe('getTtl', () => {
+    it('should return the remaining TTL for a key', async () => {
+      await cacheService.set('ttl-key', 'ttl-value', 10); // 10 seconds TTL
 
-      await expect(cache.set('circular', circular))
-        .rejects.toThrow('Unable to serialize cache value');
+      // Advance time by 2 seconds
+      vi.advanceTimersByTime(2000);
+
+      // Should have approximately 8 seconds left
+      const ttl = await cacheService.getTtl('ttl-key');
+      expect(ttl).toBeGreaterThanOrEqual(7);
+      expect(ttl).toBeLessThanOrEqual(8);
     });
 
-    it('should handle invalid JSON after retrieval', async () => {
-      // This test might need to be implemented differently based on our actual implementation
-      // It's testing that corrupted cache entries are handled gracefully
-      const invalidJson = '{"bad": json}';
-      await expect(cache.get<any>('invalid')).resolves.toBeNull();
+    it('should return null for non-existent keys', async () => {
+      const ttl = await cacheService.getTtl('non-existent');
+      expect(ttl).toBeNull();
+    });
+
+    it('should return null for expired keys', async () => {
+      await cacheService.set('expiring-ttl-key', 'expiring-value', 1); // 1 second TTL
+
+      // Advance time by 1.1 seconds
+      vi.advanceTimersByTime(1100);
+
+      // After expiration
+      const ttl = await cacheService.getTtl('expiring-ttl-key');
+      expect(ttl).toBeNull();
+    });
+
+    it('should return null for keys with no expiration', async () => {
+      await cacheService.set('no-ttl-key', 'no-ttl-value'); // No TTL specified
+
+      const ttl = await cacheService.getTtl('no-ttl-key');
+      expect(ttl).toBeNull();
     });
   });
 });

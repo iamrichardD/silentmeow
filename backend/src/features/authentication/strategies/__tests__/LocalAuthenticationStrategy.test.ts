@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { LocalAuthenticationStrategy } from '../LocalAuthenticationStrategy';
-import { IUserRepository } from '../../../user/interfaces/IUserRepository';
-import { IPasswordService } from '../../../user/interfaces/IPasswordService';
-import { User } from '../../../user/models/User';
+import { LocalAuthenticationStrategy } from '@auth/strategies/LocalAuthenticationStrategy.js';
+import { IUserRepository } from '@user/interfaces/IUserRepository.js';
+import { IPasswordService } from '@user/interfaces/IPasswordService.js';
+import { User } from '@user/models/User.js';
 
 describe('LocalAuthenticationStrategy', () => {
   let localAuthStrategy: LocalAuthenticationStrategy;

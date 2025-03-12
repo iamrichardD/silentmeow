@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { IUserRepository } from '../../user/interfaces/IUserRepository';
-import { IPasswordService } from '../../user/interfaces/IPasswordService';
-import { User } from '../../user/models/User';
-import { AuthCredentials } from '../interfaces/AuthCredentials';
-import { UserIdentity } from '../interfaces/UserIdentity';
+import { IUserRepository } from '@user/interfaces/IUserRepository.js';
+import { IPasswordService } from '@user/interfaces/IPasswordService.js';
+import { AuthCredentials } from '@auth/interfaces/AuthCredentials.js';
+import { UserIdentity } from '@auth/interfaces/UserIdentity.js';
 
 export class LocalAuthenticationStrategy {
   constructor(

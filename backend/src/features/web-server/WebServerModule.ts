@@ -1,7 +1,8 @@
 // src/features/web-server/WebServerModule.ts
-import { WebServerService } from './services/WebServerService';
-import { Logger } from '../logging/Logger';
-import { ConfigurationManager } from '../../config/ConfigurationManagerInterface';
+
+import { WebServerService } from './services/WebServerService.js';
+import { Logger } from '@logging/Logger.js';
+import { ConfigurationManager } from '@config/ConfigurationManagerInterface.js';
 
 export class WebServerModule {
   private webServerService: WebServerService;

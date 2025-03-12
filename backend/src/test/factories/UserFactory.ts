@@ -16,7 +16,7 @@
 
 // backend/src/test/factories/UserFactory.ts
 
-import { User } from '../../features/user/models/User';
+import { User } from '@user/models/User.js';
 
 export type UserOverrides = Partial<User>;
 

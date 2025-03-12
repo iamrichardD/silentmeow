@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 https://github.com/iamrichardd
+ * Copyright 2024 https://github.com/iamrichardD
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,65 +14,78 @@
  * limitations under the License.
  */
 
-import { ICacheService } from '../interfaces/ICacheService';
+// backend/src/features/cache/implementations/MemoryCacheService.ts
+
+import { ICacheService } from '@cache/interfaces/ICacheService.js';
 
 interface CacheEntry<T> {
   value: T;
-  expiresAt?: number;
+  expiry: number | null;
 }
 
 export class MemoryCacheService implements ICacheService {
-  private cache: Map<string, CacheEntry<unknown>> = new Map();
+  private cache: Map<string, CacheEntry<any>> = new Map();
+
+  async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
+    const expiry = ttlSeconds ? Date.now() + (ttlSeconds * 1000) : null;
+    this.cache.set(key, { value, expiry });
+  }
 
   async get<T>(key: string): Promise<T | null> {
-    if (!key) {
-      throw new Error('Invalid cache key');
-    }
-
-    const entry = this.cache.get(key) as CacheEntry<T> | undefined;
+    const entry = this.cache.get(key);
 
     if (!entry) {
       return null;
     }
 
-    // Check expiration
-    if (entry.expiresAt && entry.expiresAt < Date.now()) {
+    // Check if expired
+    if (entry.expiry && entry.expiry < Date.now()) {
       this.cache.delete(key);
       return null;
     }
 
-    return entry.value;
-  }
-
-  async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
-    if (!key) {
-      throw new Error('Invalid cache key');
-    }
-
-    try {
-      // Verify serializability
-      JSON.stringify(value);
-
-      const entry: CacheEntry<T> = {
-        value,
-        expiresAt: ttlSeconds ? Date.now() + (ttlSeconds * 1000) : undefined
-      };
-
-      this.cache.set(key, entry);
-    } catch (error) {
-      throw new Error('Unable to serialize cache value');
-    }
+    return entry.value as T;
   }
 
   async delete(key: string): Promise<void> {
-    if (!key) {
-      throw new Error('Invalid cache key');
-    }
-
     this.cache.delete(key);
   }
 
-  async clear(): Promise<void> {
-    this.cache.clear();
+  async exists(key: string): Promise<boolean> {
+    const entry = this.cache.get(key);
+
+    if (!entry) {
+      return false;
+    }
+
+    // Check if expired
+    if (entry.expiry && entry.expiry < Date.now()) {
+      this.cache.delete(key);
+      return false;
+    }
+
+    return true;
+  }
+
+  async getTtl(key: string): Promise<number | null> {
+    const entry = this.cache.get(key);
+
+    if (!entry) {
+      return null;
+    }
+
+    // Check if expired
+    if (entry.expiry && entry.expiry < Date.now()) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    // If no expiry, return null (infinite TTL)
+    if (!entry.expiry) {
+      return null;
+    }
+
+    // Return TTL in seconds
+    return Math.ceil((entry.expiry - Date.now()) / 1000);
   }
 }

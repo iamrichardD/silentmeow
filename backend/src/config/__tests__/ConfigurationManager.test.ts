@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { HierarchicalConfigurationManager } from '../HierarchicalConfigurationManager';
+import { HierarchicalConfigurationManager } from '@config/HierarchicalConfigurationManager.js';
 
 // Mock fs and process.env
 vi.mock('fs');

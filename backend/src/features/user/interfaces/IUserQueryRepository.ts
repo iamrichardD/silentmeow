@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { User } from '../models/User';
+import { User } from '@user/models/User.js';
 
 export interface IUserQueryRepository {
   findByEmail(email: string): Promise<User | null>;

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
+import { User } from '@auth/models/User.js';
 
 export class TokenService {
   private readonly accessTokenSecret: string;

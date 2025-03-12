@@ -1,8 +1,25 @@
-import fastify, { FastifyInstance } from 'fastify';
-import { Logger } from '../../logging/Logger';
-import { ConfigurationManager } from '../../../config/ConfigurationManagerInterface';
-import { healthRoutes } from '../routes/healthRoutes';
-import { HealthController } from '../controllers/HealthController';
+// backend/src/features/web-server/services/WebServerService.ts
+/*
+ * Copyright 2024 https://github.com/iamrichardD
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { fastify, FastifyInstance } from 'fastify';
+import { Logger } from '@logging/Logger.js';
+import { ConfigurationManager } from '@config/ConfigurationManagerInterface.js';
+import { HealthController } from '@web/controllers/HealthController.js';
+import { healthRoutes } from '@web/routes/healthRoutes.js';
 
 export class WebServerService {
   private readonly server: FastifyInstance;
@@ -11,9 +28,16 @@ export class WebServerService {
     private logger: Logger,
     private config: ConfigurationManager
   ) {
+    // Fix: Use a logger configuration object instead of the pino instance directly
     this.server = fastify({
-      logger: this.logger.getPinoInstance()
+      logger: {
+        level: this.config.get('logging.level', 'info'),
+      }
     });
+  }
+
+  getServerInstance(): FastifyInstance {
+    return this.server;
   }
 
   async initialize(): Promise<void> {
